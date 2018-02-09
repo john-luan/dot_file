@@ -1,0 +1,13 @@
+# Termux
+.cache
+.config
+.git
+.zsh_history
+.npm
+.oh-my-zsh
+.zsh-update
+.viminfo
+.termux
+storage
+
+
