@@ -1,8 +1,9 @@
+source ~/.config/prompt_fish.sh
+
 # Antigen: https://github.com/zsh-users/antigen
 ANTIGEN="$HOME/.local/bin/antigen.zsh"
 
 # Install antigen.zsh if not exist
-# zsh包管理器
 if [ ! -f "$ANTIGEN" ]; then
 	echo "Installing antigen ..."
 	[ ! -d "$HOME/.local" ] && mkdir -p "$HOME/.local" 2> /dev/null
@@ -28,9 +29,22 @@ if [ ! -f "$ANTIGEN" ]; then
 fi
 
 
-# Initialize command prompt
+# Command prompt
 # %n = user name; %m = host name; %~ = relative path
-#export PS1="%n@%m:%~ "
+if [ "$UID" -eq 0 ]; then # root
+	export PROMPT='%B%{[32m%}%n%(?..%{[31m%}%?)%{[m%}$(_fish_collapsed_pwd)%# %b'
+#	%B				到%b使用粗体
+#	%{[32m%}		
+#	%n				用户名
+#	%(?..%{[31m%}%?)%{[m%} 显示程序返回码
+#	%{[1;34m%}
+#	%~				目前工作目录相对于~的路径
+#	%# 显示#
+#	%b'
+else
+#	export PROMPT='%B%{[32m%}%n@%m%(?. . %{[31m%}%? )%{[1;34m%}%~ %# %b'
+	export PROMPT='%B%{[32m%}%n%(?..%{[31m%}%?) %{[1;34m%}$(_fish_collapsed_pwd) %f> %b'
+fi
 
 # Enable 256 color to make auto-suggestions look nice
 export TERM="xterm-256color"
@@ -53,28 +67,19 @@ source "$ANTIGEN"
 # Initialize oh-my-zsh
 antigen use oh-my-zsh
 
-# default bundles
-# visit https://github.com/unixorn/awesome-zsh-plugins
 antigen bundle git
 antigen bundle pip
 antigen bundle z
-#antigen bundle python
-#antigen bundle svn-fast-info
-#antigen bundle command-not-find
-#antigen bundle colorize
-#antigen bundle github
-#antigen bundle rupa/z z.sh
-#antigen bundle heroku
+antigen bundle python
+antigen bundle github
+antigen bundle rupa/z z.sh
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-completions
-# antigen bundle supercrabtree/k
 antigen bundle Vifon/deer
-
 antigen bundle willghatch/zsh-cdr
 antigen bundle zsh-users/zaw
 
 # uncomment the line below to enable theme
-# antigen theme fishy
 
 
 # check login shell
@@ -88,30 +93,30 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 
 typeset -A ZSH_HIGHLIGHT_STYLES
 
-ZSH_HIGHLIGHT_STYLES[command]=fg=white,bold
-ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
-
-ZSH_HIGHLIGHT_STYLES[default]=none
-ZSH_HIGHLIGHT_STYLES[unknown-token]=fg=009
-ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=009,standout
-ZSH_HIGHLIGHT_STYLES[alias]=fg=cyan,bold
-ZSH_HIGHLIGHT_STYLES[builtin]=fg=cyan,bold
-ZSH_HIGHLIGHT_STYLES[function]=fg=cyan,bold
-ZSH_HIGHLIGHT_STYLES[command]=fg=white,bold
-ZSH_HIGHLIGHT_STYLES[precommand]=fg=white,underline
-ZSH_HIGHLIGHT_STYLES[commandseparator]=none
-ZSH_HIGHLIGHT_STYLES[hashed-command]=fg=009
-ZSH_HIGHLIGHT_STYLES[path]=fg=214,underline
-ZSH_HIGHLIGHT_STYLES[globbing]=fg=063
-ZSH_HIGHLIGHT_STYLES[history-expansion]=fg=white,underline
-ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=none
-ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=none
-ZSH_HIGHLIGHT_STYLES[back-quoted-argument]=none
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]=fg=063
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]=fg=063
-ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]=fg=009
-ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=009
-ZSH_HIGHLIGHT_STYLES[assign]=none
+#ZSH_HIGHLIGHT_STYLES[command]=fg=white,bold
+#ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
+#
+#ZSH_HIGHLIGHT_STYLES[default]=none
+#ZSH_HIGHLIGHT_STYLES[unknown-token]=fg=009
+#ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=009,standout
+#ZSH_HIGHLIGHT_STYLES[alias]=fg=cyan,bold
+#ZSH_HIGHLIGHT_STYLES[builtin]=fg=cyan,bold
+#ZSH_HIGHLIGHT_STYLES[function]=fg=cyan,bold
+#ZSH_HIGHLIGHT_STYLES[command]=fg=white,bold
+#ZSH_HIGHLIGHT_STYLES[precommand]=fg=white,underline
+#ZSH_HIGHLIGHT_STYLES[commandseparator]=none
+#ZSH_HIGHLIGHT_STYLES[hashed-command]=fg=009
+#ZSH_HIGHLIGHT_STYLES[path]=fg=214,underline
+#ZSH_HIGHLIGHT_STYLES[globbing]=fg=063
+#ZSH_HIGHLIGHT_STYLES[history-expansion]=fg=white,underline
+#ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=none
+#ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=none
+#ZSH_HIGHLIGHT_STYLES[back-quoted-argument]=none
+#ZSH_HIGHLIGHT_STYLES[single-quoted-argument]=fg=063
+#ZSH_HIGHLIGHT_STYLES[double-quoted-argument]=fg=063
+#ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]=fg=009
+#ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=009
+#ZSH_HIGHLIGHT_STYLES[assign]=none
 
 # load local config
 [ -f "$HOME/.local/etc/config.zsh" ] && source "$HOME/.local/etc/config.zsh" 
@@ -159,7 +164,6 @@ alias vi='vim'
 alias apt='sudo apt'
 alias gr='grep $1 -Rn $2'
 alias aria='aria2c -x16 -s16'
-alias co='ssh -i ~/.ssh/20181209205137.pem root@133.130.113.93'
 
 
 # options
@@ -185,15 +189,8 @@ setopt HIST_VERIFY # Don't execute immediately upon history expansion.
 zstyle ':completion:*:complete:-command-:*:*' ignored-patterns '*.pdf|*.exe|*.dll'
 zstyle ':completion:*:*sh:*:' tag-order files
 
-# Command Prompt
-# 命令提示符
-if [ "$UID" -eq 0 ]; then # root登陆时
-	PROMPT="%B%{[32m%}%n%(?. . %{[31m%}%? )%{[m%}%~%# %{[1;34m%}%~ %{%}%# %b"
-	# %B 
-else
-	PROMPT="%B%{[32m%}%n@%m%(?. . %{[31m%}%? )%{[1;34m%}%~ %# %b"
-fi
 
 alias fw="http_proxy=http://localhost:1080" # 代理端口
 alias EXIT="exit"
 alias reboot="exit"
+alias x="exit"
